@@ -105,6 +105,34 @@ Tôi sẽ bổ sung vào `GUIDELINE_MINI.md` quy tắc rõ hơn về thời đi�
 
 Về quy trình làm việc, tôi sẽ chia việc kiểm tra thành ba lượt: lượt đầu kiểm tra tính liên tục của ID và thời điểm bắt đầu/kết thúc track; lượt hai kiểm tra bbox ở các frame có che khuất, giao nhau hoặc phương tiện nhỏ/khó nhìn; lượt ba kiểm tra lại các đoạn chuyển động liên tiếp để phát hiện bbox bị lệch hoặc trôi. Tôi cũng sẽ khóa bản pre-gold trước khi xem reference và ghi lại các trường hợp mơ hồ thay vì sửa bbox theo trực giác. Sau khi hoàn thành, tôi sẽ chạy evaluation để kiểm tra lại HOTA, IDF1, MOTA và các lỗi FP/FN/IDSW.
 
+
+
+
+
+## Thí nghiệm độ nhạy với `appearance_thresh`
+
+Để đánh giá ảnh hưởng của ngưỡng tương đồng appearance trong BoT-SORT + ReID, tôi thực hiện thí nghiệm với ba giá trị `appearance_thresh = 0.70, 0.80, 0.90`, trong khi giữ nguyên các tham số khác.
+
+| Cấu hình | HOTA | DetA | AssA | IDF1 | FP | FN | IDSW |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| ReID appearance = 0.70 | 0.763 | 0.711 | 0.820 | 0.900 | 91 | 26 | 2 |
+| ReID appearance = 0.80 | 0.763 | 0.711 | 0.820 | 0.900 | 91 | 26 | 2 |
+| ReID appearance = 0.90 | 0.763 | 0.710 | 0.820 | 0.899 | 91 | 27 | 2 |
+
+### Nhận xét
+
+Kết quả cho thấy việc thay đổi `appearance_thresh` trong khoảng từ 0.70 đến 0.90 không tạo ra khác biệt đáng kể trên `clip_01`. Hai cấu hình 0.70 và 0.80 cho kết quả hoàn toàn giống nhau trên tất cả các chỉ số được đánh giá. Khi tăng ngưỡng lên 0.90, hiệu năng giảm rất nhẹ: DetA giảm từ 0.711 xuống 0.710, IDF1 giảm từ 0.900 xuống 0.899 và FN tăng từ 26 lên 27. Trong khi đó, HOTA, AssA, FP và IDSW không thay đổi.
+
+Đặc biệt, số ID switch vẫn bằng 2 ở cả ba cấu hình. Do đó, việc thay đổi `appearance_thresh` trong phạm vi thí nghiệm này không giải quyết được các trường hợp ID switch của tracker.
+
+Tuy nhiên, kết quả này chỉ cho thấy `appearance_thresh` không có ảnh hưởng đáng kể đối với `clip_01` và cấu hình thí nghiệm hiện tại; không thể kết luận rằng tham số này luôn không quan trọng đối với các video hoặc bối cảnh khác.
+
+
+
+
+
+
+
 ## 7. Tệp đã nộp
 
 - [ ] `annotations/clip_01/gt.txt`
